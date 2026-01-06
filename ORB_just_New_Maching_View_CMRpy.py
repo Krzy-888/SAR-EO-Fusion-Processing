@@ -8,17 +8,17 @@ from Quality import Calc_and_Visual
 total_time = 0
 #   SIFT
 start_time = time.time()
-sift = cv2.SIFT_create()
+ORB = cv2.ORB_create(100000000)
 end_time = time.time()
 sift_init_time = end_time - start_time 
 total_time+=sift_init_time
 print("Initial SIFT time:\t",sift_init_time)
 #   WCZYTANIE DANYCH
-img1 = cv2.imread(r"Norm/SAR_URRC_SUB_035m_log.png",0)
-img2 = cv2.imread(r"Norm/EO_URRC_SUB_035m_gray.png",0)
-ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_URRC_PNEO.csv", delimiter=',',dtype=np.float32)
+img1 = cv2.imread(r"Norm/SAR_UIAA_SUB_035m_gray.png",0)
+img2 = cv2.imread(r"Norm/EO_UIAA_SUB_035m_gray.png",0)
+ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_UIAA_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO)
-ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_URRC_CAPELLA.csv", delimiter=',',dtype=np.float32)
+ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_UIAA_CAPELLA.csv", delimiter=',',dtype=np.float32)
 print(ptk_CAPELLA)
 
 print("\t***img1***")
@@ -35,8 +35,8 @@ img2 = img2[0:1500, 0:1500]
 
 #   START
 start_time = time.time()
-kp1, des1 = sift.detectAndCompute(img1, None)
-kp2, des2 = sift.detectAndCompute(img2, None)
+kp1, des1 = ORB.detectAndCompute(img1, None)
+kp2, des2 = ORB.detectAndCompute(img2, None)
 end_time = time.time()
 sift_detect_time = end_time - start_time 
 total_time+=sift_detect_time
@@ -49,10 +49,14 @@ out2 = cv2.drawKeypoints(img2, kp2, None)
 #   MACHING
 #   FLANN
 start_time = time.time()
-FLANN_INDEX_KDTREE = 1
-index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+FLANN_INDEX_LSH = 6
+index_params= dict(algorithm = FLANN_INDEX_LSH,
+                   table_number = 6, # 12
+                   key_size = 12,     # 20
+                   multi_probe_level = 1) #2
 search_params = dict(checks=50)
 flann = cv2.FlannBasedMatcher(index_params, search_params)
+
 end_time = time.time()
 flann_init_time = end_time - start_time 
 total_time+=flann_init_time
