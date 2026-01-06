@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
-paths = [r"Norm/CAPELLA_C05_URRC_Subset1000_2_gray.png",r"Norm/CAPELLA_C05_URRC_Subset1000_2_log.png",r"Norm/CAPELLA_C05_URRC_Subset1000_2_bad.png"]
+paths = [r"Norm/SAR_URRC_SUB_035m_gray.png",r"Norm/SAR_URRC_SUB_035m_log.png",r"Norm/SAR_URRC_SUB_035m_bad.png"]
 name = ["2-98%","min-max skala dB","min-max"]
 
 fig, axes = plt.subplots(2, 3)
