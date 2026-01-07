@@ -6,12 +6,12 @@ import matplotlib.colors as mc
 import RMSE
 
 # DANE
-ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_URWH_PNEO.csv", delimiter=',',dtype=np.float32)
+ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_UIAA_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO)
-ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_URWH_CAPELLA.csv", delimiter=',',dtype=np.float32)
+ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_UIAA_CAPELLA.csv", delimiter=',',dtype=np.float32)
 print(ptk_CAPELLA)
-img1 = cv2.imread(r"Norm/SAR_URWH_SUB_035m_gray.png",0)
-img2 = cv2.imread(r"Norm/EO_URWH_SUB_035m_gray.png",0)
+img1 = cv2.imread(r"Norm/SAR_UIAA_SUB_035m_gray.png",0)
+img2 = cv2.imread(r"Norm/EO_UIAA_SUB_035m_gray.png",0)
 diff = ptk_PNEO-ptk_CAPELLA
 # RMSE i Transformacja
 print(diff)
