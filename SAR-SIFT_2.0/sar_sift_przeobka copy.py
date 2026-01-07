@@ -55,7 +55,7 @@ print(f"Liczba kp:\t{len(GR_key_array_1[:,0:2])}")
 #plt.scatter(kp1[:,0],kp1[:,1])
 #plt.imshow(img1,cmap="gray")
 #plt.show()
-binary_file_path = 'data_kp.npy'
+binary_file_path = f'Points_and_Descriptors/{name}_kp.npy'
 np.save(binary_file_path, kp1)
-binary_file_path = 'data_des.npy'
+binary_file_path = f'Points_and_Descriptors/{name}_des.npy'
 np.save(binary_file_path, des1)
