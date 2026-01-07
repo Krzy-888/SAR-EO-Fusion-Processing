@@ -165,18 +165,18 @@ else:
                     #plt.show()
                     
                     raport.write(f"<img src='SAR_{data}_SUB_{scale}m_{norm}-EO_{data}_SUB_{scale}m_gray.png'/>")
-                    #corr_mask = corr_mask.ravel().astype(bool)
+                    corr_mask = corr_mask.ravel().astype(bool)
 
-                    #bad_src  = src_pts[~mask]
-                    #good_src = src_pts[mask]
+                    bad_src  = src_pts[~mask]
+                    good_src = src_pts[mask]
 
-                    #bad_dst  = dst_pts[~mask]
-                    #good_dst = dst_pts[mask]
+                    bad_dst  = dst_pts[~mask]
+                    good_dst = dst_pts[mask]
 
-                    #points = [bad_src, good_src, bad_dst, good_dst]
-                    #color = ['r','g']
-                    #fig, axes = plt.subplots(3, 1)
-                    """
+                    points = [bad_src, good_src, bad_dst, good_dst]
+                    color = ['r','g']
+                    fig, axes = plt.subplots(3, 1)
+                    
                     for i in range(3) :
                         if i == 2:
                             axes[i].imshow(image,cmap="gray")
@@ -184,8 +184,10 @@ else:
                             Calc_and_Visual.show_maches_in_axis(axes[i],img1,img2,points[i],points[i+2],color[i])
                         axes[i].set_title(tytuły[i])
                     plt.tight_layout()
-                    plt.show()
-                    """
+                    plt.savefig(f"report_{data}_SIFT/SAR_{data}_SUB_{scale}m_{norm}-EO_{data}_SUB_{scale}m_gray_bad.png", dpi=300,)
+                    raport.write(f"<img src='SAR_{data}_SUB_{scale}m_{norm}-EO_{data}_SUB_{scale}m_gray_bad.png'/>")
+                    #plt.show()
+                    
                     print(f"Norm/SAR_{data}_SUB_{scale}m_{norms} -> Norm/EO_{data}_SUB_{scale}m_gray.png")
                     raport.write(f"<p>Norm/SAR_{data}_SUB_{scale}m_{norms} -> Norm/EO_{data}_SUB_{scale}m_gray</p>")
                     print(f"N corr:\t{N_corr}\nN maches:\t{N_maches}\nCMR: {CMI*100}\nCMR corr:\t{CMR_corr}\nRMSE: \t{rmse_1*0.35}\nRMSE Kontrol:\t{rmse_2*0.35}\nTotal Time: \t{total_time}")
