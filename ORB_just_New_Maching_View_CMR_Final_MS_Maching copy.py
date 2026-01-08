@@ -55,23 +55,23 @@ else:
                         #IMREAD
                         img1 = cv2.imread(f"Norm/SAR_{d}_SUB_{scale}m_{norm}.png",0)
                         img2 = cv2.imread(f"Norm/EO_{d}_SUB_{scale}m_gray.png",0)
-                        #SIFT
+                        #ORB
                         
                         start_time = time.time()
                         orb = cv2.ORB_create(nfeatures = 800000)
                         end_time = time.time()
                         orb_init_time = end_time - start_time 
                         total_time+=orb_init_time
-                        print("Init SIFT time:\t",orb_init_time)
-                        raport.write(f"<p>Init SIFT time:   {orb_init_time}</p>")
+                        print("Init ORB time:\t",orb_init_time)
+                        raport.write(f"<p>Init ORB time:   {orb_init_time}</p>")
                         #   START
                         start_time = time.time()
                         kp1, des1 = orb.detectAndCompute(img1, None)
                         kp2, des2 = orb.detectAndCompute(img2, None)
                         end_time = time.time()
-                        sift_detect_time = end_time - start_time 
-                        total_time+=sift_detect_time
-                        print("Detect SIFT time:\t",sift_detect_time)
+                        ORB_detect_time = end_time - start_time 
+                        total_time+=ORB_detect_time
+                        print("Detect ORB time:\t",ORB_detect_time)
                         print("KP1:", len(kp1))
                         print("KP2:", len(kp2))
                         out1 = cv2.drawKeypoints(img1, kp1, None)
