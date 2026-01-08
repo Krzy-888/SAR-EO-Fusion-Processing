@@ -31,8 +31,8 @@ print(img2.shape)
 print(img2.max())
 print(img2.min())
 
-img1 = img1[0:1500, 0:1500]
-img2 = img2[0:1500, 0:1500]
+#img1 = img1[0:1500, 0:1500]
+#img2 = img2[0:1500, 0:1500]
 
 #   START
 start_time = time.time()
