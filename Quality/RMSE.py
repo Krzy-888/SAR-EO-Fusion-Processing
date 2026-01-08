@@ -40,7 +40,7 @@ def calculate_CMR(pkt_ref1,pkt_ref2,src_pts,dst_pts,treshold):
     CMR = len(corr)/len(blad)*100
     return CMR,rmse,blad
 
-def calculate_CMR_mask(pkt_ref1,pkt_ref2,src_pts,dst_pts,treshold):
+def calculate_CMR_mask(pkt_ref1,pkt_ref2,src_pts,dst_pts):
     """
     Docstring for calculate_CMR
     
@@ -52,6 +52,8 @@ def calculate_CMR_mask(pkt_ref1,pkt_ref2,src_pts,dst_pts,treshold):
     """
     
     M,_ = cv2.estimateAffine2D(pkt_ref1,pkt_ref2)
+    rmse,blad = calculate_RMSE(M,pkt_ref1,pkt_ref2)
+    treshold = max(blad)
     rmse,blad = calculate_RMSE(M,src_pts,dst_pts)
     corr = blad[blad <= treshold] 
     mask = blad <= treshold

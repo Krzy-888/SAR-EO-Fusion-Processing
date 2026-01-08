@@ -31,10 +31,10 @@ for i in ilorazy:
     #print(M)
 """
 
-if os.path.exists(f"report_SIFT/report_SIFT.html"):
+if os.path.exists(f"report_ORB/report_ORB.html"):
     print("Istnieje !!!")
 else:
-    with open(f"report_SIFT/report_SIFT.html", "w") as raport:
+    with open(f"report_ORB/report_ORB.html", "w") as raport:
         for d in data:
             print(f"Start {d}")
             raport.write(f"<h1>Start {d}</h1>")
@@ -58,16 +58,16 @@ else:
                         #SIFT
                         
                         start_time = time.time()
-                        sift = cv2.SIFT_create()
+                        orb = cv2.ORB_create(nfeatures = 800000)
                         end_time = time.time()
-                        sift_init_time = end_time - start_time 
-                        total_time+=sift_init_time
-                        print("Init SIFT time:\t",sift_init_time)
-                        raport.write(f"<p>Init SIFT time:   {sift_init_time}</p>")
+                        orb_init_time = end_time - start_time 
+                        total_time+=orb_init_time
+                        print("Init SIFT time:\t",orb_init_time)
+                        raport.write(f"<p>Init SIFT time:   {orb_init_time}</p>")
                         #   START
                         start_time = time.time()
-                        kp1, des1 = sift.detectAndCompute(img1, None)
-                        kp2, des2 = sift.detectAndCompute(img2, None)
+                        kp1, des1 = orb.detectAndCompute(img1, None)
+                        kp2, des2 = orb.detectAndCompute(img2, None)
                         end_time = time.time()
                         sift_detect_time = end_time - start_time 
                         total_time+=sift_detect_time
@@ -81,6 +81,22 @@ else:
                         #   MACHING
                         #   FLANN
                         start_time = time.time()
+                        FLANN_INDEX_LSH = 6
+                        index_params= dict(algorithm = FLANN_INDEX_LSH,
+                                        table_number = 6, # 12
+                                        key_size = 12,     # 20
+                                        multi_probe_level = 1) #2
+                        search_params = dict(checks=50)
+
+
+                        flann = cv2.FlannBasedMatcher(index_params, search_params)
+                        end_time = time.time()
+                        flann_init_time = end_time - start_time
+                        total_time+= flann_init_time
+                        print("FLANN initial time:\t",flann_init_time)
+                        raport.write(f"<p>FLANN initial time:   {flann_init_time}</p>")
+                        """
+                        start_time = time.time()
                         FLANN_INDEX_KDTREE = 1
                         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
                         search_params = dict(checks=50)
@@ -90,6 +106,7 @@ else:
                         total_time+=flann_init_time
                         print("FLANN initial time:\t",flann_init_time)
                         raport.write(f"<p>FLANN initial time:   {flann_init_time}</p>")
+                        """
 
                         #   KNN MACHING
                         start_time = time.time()
@@ -102,9 +119,13 @@ else:
                         #   RATIO TEST LOWE
                         start_time = time.time()
                         good_matches = []
-                        for m, n in matches:
-                            if m.distance < 0.7 * n.distance:
-                                good_matches.append(m)
+                        for mach in matches:
+                            if len(mach) !=2:
+                                continue
+                            else:
+                                m,n = mach
+                                if m.distance < 0.7 * n.distance:
+                                    good_matches.append(m)
                         end_time = time.time()
                         ratio_test_time = end_time - start_time 
                         total_time+=ratio_test_time
@@ -177,7 +198,7 @@ else:
                                 Calc_and_Visual.show_maches_in_axis(axes[i],img1,img2,points[i],points[i+2],color[i])
                             axes[i].set_title(tytuły[i])
                         plt.tight_layout()
-                        plt.savefig(f"report_SIFT/SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray_bad.png", dpi=300,)
+                        plt.savefig(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray_bad.png", dpi=300,)
                         raport.write(f"<img src='SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray_bad.png'/>")
                         #plt.show()
 
@@ -210,7 +231,7 @@ else:
                                 Calc_and_Visual.show_maches_in_axis(axes[i],img1,img2,points[i],points[i+2],color[i])
                             axes[i].set_title(tytuły[i])
                         plt.tight_layout()
-                        plt.savefig(f"report_SIFT/SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray.png", dpi=300,)
+                        plt.savefig(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray.png", dpi=300,)
                         #plt.show()
 
                         raport.write(f"<img src='SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray.png'/>")
