@@ -1,15 +1,11 @@
 #   LIBRARIES
+import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt 
 import time
 from Quality import RMSE
 from Quality import Calc_and_Visual
-import random
-np.random.seed(0)
-random.seed(0)
-cv2.setRNGSeed(0)
-
 total_time = 0
 #   SIFT
 start_time = time.time()
@@ -99,6 +95,8 @@ print(M)
 mask = mask.ravel().astype(bool)
 src_pts = pts1[mask]
 dst_pts = pts2[mask]
+M2 = cv2.getAffineTransform(src_pts[:3],dst_pts[:3])
+print(M2)
 end_time = time.time()
 RANSAC_model_time = end_time - start_time 
 total_time+=RANSAC_model_time
