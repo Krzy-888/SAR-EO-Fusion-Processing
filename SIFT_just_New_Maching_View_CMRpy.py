@@ -14,11 +14,11 @@ sift_init_time = end_time - start_time
 total_time+=sift_init_time
 print("Initial SIFT time:\t",sift_init_time)
 #   WCZYTANIE DANYCH
-img1 = cv2.imread(r"Norm/SAR_UIAA_SUB_1m_gray.png",0)
-img2 = cv2.imread(r"Norm/EO_UIAA_SUB_1m_gray.png",0)
-ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_UIAA_PNEO.csv", delimiter=',',dtype=np.float32)
+img1 = cv2.imread(r"Norm/SAR_URRC_SUB_1m_gray.png",0)
+img2 = cv2.imread(r"Norm/EO_URRC_SUB_1m_gray.png",0)
+ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_URRC_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO)
-ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_UIAA_CAPELLA.csv", delimiter=',',dtype=np.float32)
+ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_URRC_CAPELLA.csv", delimiter=',',dtype=np.float32)
 print(ptk_CAPELLA)
 
 print("\t***img1***")
@@ -126,7 +126,7 @@ tytuły = ["złe","dobre","wynik transformacji"]
 points = [pts1[~mask],pts1[mask],pts2[~mask],pts2[mask]]
 color = ['r','g']
 fig, axes = plt.subplots(3, 1)
-for i in range(3) :
+for i in range(3):
     if i == 2:
         axes[i].imshow(image,cmap="gray")
     else:
@@ -134,6 +134,38 @@ for i in range(3) :
     axes[i].set_title(tytuły[i])
 plt.tight_layout()
 plt.show()
+
+
+CMR_corr,rmse_3,blad_3,corr_mask =  RMSE.calculate_CMR_mask(ptk_CAPELLA,ptk_PNEO,src_pts,dst_pts,1)
+#corr_mask = corr_mask.ravel().astype(bool)
+#print("RMSE:\t", RMSE*0.35)
+#PRZED
+# h,w = img1.shape
+# image = cv2.warpAffine(img1,M,(h,w))
+#image = cv2.warpAffine(img1,M2,(h,w))
+tytuły = ["złe","dobre","wynik transformacji"]
+#points = [pts1[~corr_mask],pts1[corr_mask],pts2[~corr_mask],pts2[corr_mask]]
+
+corr_mask = corr_mask.ravel().astype(bool)
+
+bad_src  = src_pts[~corr_mask]
+good_src = src_pts[corr_mask]
+
+bad_dst  = dst_pts[~corr_mask]
+good_dst = dst_pts[corr_mask]
+
+points = [bad_src, good_src, bad_dst, good_dst]
+color = ['r','g']
+fig, axes = plt.subplots(3, 1)
+for i in range(3) :
+    if i == 2:
+        axes[i].imshow(image,cmap="gray",origin="upper")
+    else:
+        Calc_and_Visual.show_maches_in_axis(axes[i],img1,img2,points[i],points[i+2],color[i])
+    axes[i].set_title(tytuły[i])
+plt.tight_layout()
+plt.show()
+#plt.show()
 
 
 #for point in kp1:
