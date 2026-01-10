@@ -1,6 +1,37 @@
 import cv2
 import numpy as np
 
+def calculate_RMSE_Homo(H, pkt_zrod, pkt_ref):
+    """
+    RMSE dla transformacji homograficznej
+
+    :param H: macierz homografii 3x3
+    :param pkt_zrod: punkty źródłowe (N, 2)
+    :param pkt_ref: punkty referencyjne (N, 2)
+    """
+
+    # 1. Współrzędne jednorodne
+    pkt_h = np.c_[pkt_zrod, np.ones(pkt_zrod.shape[0])]
+
+    # 2. Transformacja homograficzna
+    pkt_trans = (H @ pkt_h.T).T   # (N, 3)
+
+    # 3. Normalizacja (x/w, y/w)
+    pkt_trans_xy = pkt_trans[:, :2] / pkt_trans[:, 2][:, np.newaxis]
+
+    # 4. Różnice
+    roznica = pkt_ref - pkt_trans_xy
+
+    # 5. Odległość euklidesowa^2
+    odleglosc2 = np.sum(roznica**2, axis=1)
+
+    # 6. RMSE
+    RMSE = np.sqrt(np.mean(odleglosc2))
+
+    return RMSE, odleglosc2
+
+
+
 def calculate_RMSE(Macierz,pkt_zrod,pkt_ref):
     """
     Docstring for calculate_RMSE
