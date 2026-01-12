@@ -7,29 +7,22 @@ import time
 from Quality import RMSE
 from Quality import Calc_and_Visual
 import random
-np.random.seed(0)
-random.seed(0)
-cv2.setRNGSeed(0)
+
+import build_scale
+import find_scale_extreme
+import calc_descriptors
+import match
+import display
+import ransac
+import image_fusion
+import MI
+
 data = ["URRC","UIAA","URWH","UDYE"]
 scales = ["10","1","035","GM_035"]
 norms = ["gray","log","bad"]
 grd = [10,1,0.35,0.35]
 
 ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
-"""
-pkt_PNEO_list = []
-pkt_CAPELLA_list = []
-for i in ilorazy:
-    n_pkt_neo = ptk_PNEO/ilorazy[i]
-    #print(n_pkt_neo)
-    pkt_PNEO_list.append(n_pkt_neo)
-    n_pkt_cap = ptk_CAPELLA/ilorazy[i]
-    #print(n_pkt_cap)
-    pkt_CAPELLA_list.append(n_pkt_cap)
-    M,mask =cv2.estimateAffine2D(n_pkt_cap,n_pkt_neo)
-    rmse,blad = RMSE.calculate_RMSE(M,n_pkt_cap,n_pkt_neo)
-    #print(M)
-"""
 
 if os.path.exists(f"report_SIFT/report_SIFT.html"):
     print("Istnieje !!!")
@@ -38,13 +31,11 @@ else:
         for d in data:
             print(f"Start {d}")
             raport.write(f"<h1>Start {d}</h1>")
-            ref_PNEO = np.genfromtxt(f"RefPoints/UTM_{d}_PNEO_ref.csv", delimiter=',',dtype=np.float32)
-            ref_CAPELLA = np.genfromtxt(f"RefPoints/UTM_{d}_CAPELLA_ref.csv", delimiter=',',dtype=np.float32)
             ptk_PNEO = np.genfromtxt(f"RefPoints/UTM_{d}_PNEO.csv", delimiter=',',dtype=np.float32)
+            print(ptk_PNEO)
             ptk_CAPELLA = np.genfromtxt(f"RefPoints/UTM_{d}_CAPELLA.csv", delimiter=',',dtype=np.float32)
+            print(ptk_CAPELLA)
             for s,scale in enumerate(scales):
-                n_ref_PNEO = ref_PNEO/ilorazy[s]
-                n_ref_CAPELLA = ref_CAPELLA/ilorazy[s]
                 n_ptk_PNEO = ptk_PNEO/ilorazy[s]
                 n_ptk_CAPELLA = ptk_CAPELLA/ilorazy[s]
                 for n,norm in enumerate(norms):
@@ -55,31 +46,44 @@ else:
                         print(f"SAR_{d}_SUB_{scale}m_{norm} -> EO_{d}_SUB_{scale}m_gray.png")
                         raport.write(f"<h1>SAR_{d}_SUB_{scale}m_{norm} -> EO_{d}_SUB_{scale}m_gray.png</h1>")
                         #IMREAD
-                        img1 = cv2.imread(f"Norm/SAR_{d}_SUB_{scale}m_{norm}.png",0)
-                        img2 = cv2.imread(f"Norm/EO_{d}_SUB_{scale}m_gray.png",0)
+                        img1 = cv2.imread(f"Norm/SAR_{d}_SUB_{scale}m_{norm}.png")
+                        img2 = cv2.imread(f"Norm/EO_{d}_SUB_{scale}m_gray.png")
+                        gray1 = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
+                        gray2 = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+                        gray1 = gray1/255.
+                        gray2 = gray2/255.
                         #SIFT
                         
                         start_time = time.time()
-                        sift = cv2.SIFT_create()
+                        sigma = 2                      #initial layer scale
+                        ratio = 2**(1/3.)               #scale ratio
+                        Mmax = 8                       #layer number
+                        d = 0.04
+                        d_SH_1 = 0.8                   #Harros function threshold
+                        d_SH_2 = 0.8                   #Harros function threshold
+                        distRatio = 0.9
+                        error_threshold = 1
                         end_time = time.time()
                         sift_init_time = end_time - start_time 
                         total_time+=sift_init_time
-                        print("Init SIFT time:\t",sift_init_time)
-                        raport.write(f"<p>Init SIFT time:   {sift_init_time}</p>")
+                        print("Init SAR_SIFT time:\t",sift_init_time)
+                        raport.write(f"<p>Init SAR_SIFT time:   {sift_init_time}</p>")
                         #   START
                         start_time = time.time()
-                        kp1, des1 = sift.detectAndCompute(img1, None)
-                        kp2, des2 = sift.detectAndCompute(img2, None)
+                        sar_harris_function_1,gradient_1,angle_1 = build_scale.build_scale(gray1,sigma,Mmax,ratio,d)
+                        sar_harris_function_2,gradient_2,angle_2 = build_scale.build_scale(gray2,sigma,Mmax,ratio,d)
+                        GR_key_array_1 = find_scale_extreme.find_scale_extreme(sar_harris_function_1,d_SH_1,sigma,ratio,gradient_1,angle_1)
+                        GR_key_array_2 = find_scale_extreme.find_scale_extreme(sar_harris_function_2,d_SH_2,sigma,ratio,gradient_2,angle_2)
+                        descriptors_1, locs_1 = calc_descriptors.calc_descriptors(gradient_1,angle_1,GR_key_array_1)
+                        descriptors_2, locs_2 = calc_descriptors.calc_descriptors(gradient_2,angle_2,GR_key_array_2)
                         end_time = time.time()
                         sift_detect_time = end_time - start_time 
                         total_time+=sift_detect_time
-                        print("Detect SIFT time:\t",sift_detect_time)
-                        print("KP1:", len(kp1))
-                        print("KP2:", len(kp2))
-                        out1 = cv2.drawKeypoints(img1, kp1, None)
-                        out2 = cv2.drawKeypoints(img2, kp2, None)
-                        print(out1)
-                        print(out2)
+                        print("Detect SAR_SIFT time:\t",sift_detect_time)
+                        raport.write(f"<p>Detect SAR_SIFT time:   {sift_detect_time}</p>")
+                        print("KP1:", len(GR_key_array_1))
+                        print("KP2:", len(GR_key_array_2))
+                        raport.write(f"<p>Detect points :  KP1 {len(GR_key_array_1)} KP2 {len(GR_key_array_2)}</p>")
                         #   MACHING
                         #   FLANN
                         start_time = time.time()
@@ -162,7 +166,7 @@ else:
                         rmse_1,blad = RMSE.calculate_RMSE(M,src_pts,dst_pts)
                         rmse_2,blad = RMSE.calculate_RMSE(M,n_ptk_CAPELLA,n_ptk_PNEO)
 
-                        CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ref_CAPELLA,n_ref_PNEO,src_pts,dst_pts,1)
+                        CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ptk_CAPELLA,n_ptk_PNEO,src_pts,dst_pts,1)
                         #print("RMSE:\t", RMSE*0.35)
                         #PRZED
                         h,w = img1.shape
