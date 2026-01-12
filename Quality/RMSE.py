@@ -36,7 +36,7 @@ def calculate_RMSE(Macierz,pkt_zrod,pkt_ref):
     """
     Docstring for calculate_RMSE
     
-    :param Macierz: Macierz transformacji z punktów referencyjnych (SAR->EO)
+    :param Macierz: Macierz transformacji z nowych punktów,bądź z referencyjnych (SAR->EO)
     :param pkt_zrod: Punkty Kontrolne obraz dopasowywany (SAR)
     :param pkt_ref: Punkty kontrolne obraz referencyjny (EO)
     """
@@ -91,14 +91,26 @@ def calculate_CMR_mask(pkt_ref1,pkt_ref2,src_pts,dst_pts):
     CMR = len(corr)/len(blad)*100
     return CMR,rmse,blad,mask
 
+
+
 def calculate_CMR_mask_new(macierz,pkt_kontrol_src,pkt_kontrol_ref,src_pts,dst_pts):
     """
-
-"""
-    rmse,blad = calculate_RMSE(macierz,pkt_kontrol_src,pkt_kontrol_ref)
-    treshold = max(blad)
-    rmse,blad = calculate_RMSE(macierz,src_pts,dst_pts)
-    corr = blad[blad <= treshold] 
+    Docstring for calculate_CMR_mask_new
+    
+    :param macierz: Macierz referencyjnej transformacji
+    :param pkt_kontrol_src: Punkty Kontrolne Dopasowywany (SAR)
+    :param pkt_kontrol_ref: Punkty Kontrolne Referencyjny (EO)
+    :param src_pts: src_pts
+    :param dst_pts: dst_pts
+    :param treshold: Description
+    
+    """
+    # RMSE na Referencyjnym punktów kontrolnych
+    rmse,s = calculate_RMSE(macierz,pkt_kontrol_src,pkt_kontrol_ref)
+    treshold = rmse*3
+    # Błąd na referencyjnym punktów dopasowania
+    _,blad = calculate_RMSE(macierz,src_pts,dst_pts)
     mask = blad <= treshold
+    corr = blad[mask] 
     CMR = len(corr)/len(blad)*100
-    return CMR,rmse,blad,mask
+    return CMR,treshold,blad,mask
