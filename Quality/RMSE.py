@@ -36,9 +36,9 @@ def calculate_RMSE(Macierz,pkt_zrod,pkt_ref):
     """
     Docstring for calculate_RMSE
     
-    :param Macierz: Description
-    :param pkt_zrod: Description
-    :param pkt_ref: Description
+    :param Macierz: Macierz transformacji z punktów referencyjnych (SAR->EO)
+    :param pkt_zrod: Punkty Kontrolne obraz dopasowywany (SAR)
+    :param pkt_ref: Punkty kontrolne obraz referencyjny (EO)
     """
     # Dodanie Skali
     pkt_po_trans = np.c_[pkt_zrod,np.ones(pkt_zrod.shape[0])]
@@ -86,6 +86,18 @@ def calculate_CMR_mask(pkt_ref1,pkt_ref2,src_pts,dst_pts):
     rmse,blad = calculate_RMSE(M,pkt_ref1,pkt_ref2)
     treshold = max(blad)
     rmse,blad = calculate_RMSE(M,src_pts,dst_pts)
+    corr = blad[blad <= treshold] 
+    mask = blad <= treshold
+    CMR = len(corr)/len(blad)*100
+    return CMR,rmse,blad,mask
+
+def calculate_CMR_mask_new(macierz,pkt_kontrol_src,pkt_kontrol_ref,src_pts,dst_pts):
+    """
+
+"""
+    rmse,blad = calculate_RMSE(macierz,pkt_kontrol_src,pkt_kontrol_ref)
+    treshold = max(blad)
+    rmse,blad = calculate_RMSE(macierz,src_pts,dst_pts)
     corr = blad[blad <= treshold] 
     mask = blad <= treshold
     CMR = len(corr)/len(blad)*100

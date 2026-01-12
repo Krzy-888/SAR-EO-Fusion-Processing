@@ -11,11 +11,11 @@ np.random.seed(0)
 random.seed(0)
 cv2.setRNGSeed(0)
 data = ["URRC","UIAA","URWH","UDYE"]
-scales = ["10","1","035"]
+scales = ["10","1","035","GM_035"]
 norms = ["gray","log","bad"]
-grd = [10,1,0.35]
+grd = [10,1,0.35,0.35]
 
-ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35]
+ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
 """
 pkt_PNEO_list = []
 pkt_CAPELLA_list = []
@@ -38,11 +38,13 @@ else:
         for d in data:
             print(f"Start {d}")
             raport.write(f"<h1>Start {d}</h1>")
+            ref_PNEO = np.genfromtxt(f"RefPoints/UTM_{d}_PNEO_ref.csv", delimiter=',',dtype=np.float32)
+            ref_CAPELLA = np.genfromtxt(f"RefPoints/UTM_{d}_CAPELLA_ref.csv", delimiter=',',dtype=np.float32)
             ptk_PNEO = np.genfromtxt(f"RefPoints/UTM_{d}_PNEO.csv", delimiter=',',dtype=np.float32)
-            print(ptk_PNEO)
             ptk_CAPELLA = np.genfromtxt(f"RefPoints/UTM_{d}_CAPELLA.csv", delimiter=',',dtype=np.float32)
-            print(ptk_CAPELLA)
             for s,scale in enumerate(scales):
+                n_ref_PNEO = ref_PNEO/ilorazy[s]
+                n_ref_CAPELLA = ref_CAPELLA/ilorazy[s]
                 n_ptk_PNEO = ptk_PNEO/ilorazy[s]
                 n_ptk_CAPELLA = ptk_CAPELLA/ilorazy[s]
                 for n,norm in enumerate(norms):
@@ -160,7 +162,7 @@ else:
                         rmse_1,blad = RMSE.calculate_RMSE(M,src_pts,dst_pts)
                         rmse_2,blad = RMSE.calculate_RMSE(M,n_ptk_CAPELLA,n_ptk_PNEO)
 
-                        CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ptk_CAPELLA,n_ptk_PNEO,src_pts,dst_pts,1)
+                        CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ref_CAPELLA,n_ref_PNEO,src_pts,dst_pts,1)
                         #print("RMSE:\t", RMSE*0.35)
                         #PRZED
                         h,w = img1.shape

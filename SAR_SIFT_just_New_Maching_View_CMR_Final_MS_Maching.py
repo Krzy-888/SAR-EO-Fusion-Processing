@@ -18,11 +18,11 @@ import image_fusion
 import MI
 
 data = ["URRC","UIAA","URWH","UDYE"]
-scales = ["10","1","035"]
+scales = ["10","1","035","GM_035"]
 norms = ["gray","log","bad"]
-grd = [10,1,0.35]
+grd = [10,1,0.35,0.35]
 
-ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35]
+ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
 
 if os.path.exists(f"report_SIFT/report_SIFT.html"):
     print("Istnieje !!!")
