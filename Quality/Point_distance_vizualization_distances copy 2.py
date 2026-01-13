@@ -5,19 +5,22 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mc
 import RMSE
 
+
+# Dane
+title ="URWH"
 # DANE kontrolne
-ptk_PNEO_k = np.genfromtxt(r"RefPoints/UTM_UIAA_PNEO.csv", delimiter=',',dtype=np.float32)
+ptk_PNEO_k = np.genfromtxt(f"RefPoints/UTM_{title}_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO_k)
-ptk_CAPELLA_k = np.genfromtxt(r"RefPoints/UTM_UIAA_CAPELLA.csv", delimiter=',',dtype=np.float32)
+ptk_CAPELLA_k = np.genfromtxt(f"RefPoints/UTM_{title}_CAPELLA.csv", delimiter=',',dtype=np.float32)
 print(ptk_CAPELLA_k)
 # Dane do wizualizacji
-img1 = cv2.imread(r"Norm/SAR_UIAA_SUB_035m_gray.png",0)
-img2 = cv2.imread(r"Norm/EO_UIAA_SUB_035m_gray.png",0)
+img1 = cv2.imread(f"Norm/SAR_{title}_SUB_035m_gray.png",0)
+img2 = cv2.imread(f"Norm/EO_{title}_SUB_035m_gray.png",0)
 
 # Dane do wyznaczenia referencyjej transformacji
-ptk_PNEO_ref = np.genfromtxt(r"RefPoints/UTM_UIAA_PNEO_ref.csv", delimiter=',',dtype=np.float32)
+ptk_PNEO_ref = np.genfromtxt(f"RefPoints/UTM_{title}_PNEO_ref.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO_ref)
-ptk_CAPELLA_ref = np.genfromtxt(r"RefPoints/UTM_UIAA_CAPELLA_ref.csv", delimiter=',',dtype=np.float32)
+ptk_CAPELLA_ref = np.genfromtxt(f"RefPoints/UTM_{title}_CAPELLA_ref.csv", delimiter=',',dtype=np.float32)
 print(ptk_CAPELLA_ref)
 
 
@@ -26,9 +29,9 @@ diff = ptk_PNEO_k-ptk_CAPELLA_k
 print(diff)
 diff_ref = ptk_PNEO_ref-ptk_CAPELLA_ref
 print(diff_ref)
-dist = np.linalg.norm(diff, axis=1)
-print(dist)
-print(np.mean(dist))
+# dist = np.linalg.norm(diff, axis=1)
+# print(dist)
+# print(np.mean(dist))
 M,mask =cv2.estimateAffine2D(ptk_CAPELLA_ref,ptk_PNEO_ref)
 rmse,blad = RMSE.calculate_RMSE(M,ptk_CAPELLA_k,ptk_PNEO_k)
 rmse_ref,blad_ref = RMSE.calculate_RMSE(M,ptk_CAPELLA_ref,ptk_PNEO_ref)
@@ -40,13 +43,13 @@ print(blad_ref*0.35)
 print(rmse_ref*0.35)
 # Figure
 kolory = ["yellow","orange","red"]
-kolory_2 = ["green","cyan","blue"]
+# kolory_2 = ["green","cyan","blue"]
 kolor = mc.LinearSegmentedColormap.from_list('mycmap', kolory)
 # kolor_2 = mc.LinearSegmentedColormap.from_list('mycmap', kolory_2)
-plt.title("UIAA")
+plt.title(title)
 plt.scatter(ptk_PNEO_k[:,0],ptk_PNEO_k[:,1], c=blad*0.35,cmap=kolor)
 plt.colorbar()
-plt.scatter(ptk_PNEO_ref[:,0],ptk_PNEO_ref[:,1], cmap="blue")
+plt.scatter(ptk_PNEO_ref[:,0],ptk_PNEO_ref[:,1])
 plt.imshow(img2,cmap="gray")
 plt.show()
 
