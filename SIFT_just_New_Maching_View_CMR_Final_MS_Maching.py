@@ -126,6 +126,7 @@ else:
                         raport.write(f"<p>RANSAC_init_time:   {ratio_test_time}</p>")
 
                         start_time = time.time()
+                        # Linczenie Macierzy Transformacji dla modelu po dopasowaniu obrazów
                         if len(pts1) >=3:
                             M, mask = cv2.estimateAffine2D(pts1, pts2, method=cv2.RANSAC, ransacReprojThreshold=2.0)
                         else:
@@ -137,6 +138,7 @@ else:
                             raport.write(f"<h1 style='color:red;'>transformation impossible</h1>")
                             continue
                         print(M)
+                        # Maska Po Ransach
                         mask = mask.ravel().astype(bool)
                         src_pts = pts1[mask]
                         dst_pts = pts2[mask]
@@ -153,16 +155,20 @@ else:
 
                         N_corr = np.sum(mask)
                         N_maches = len(mask)
+                        #Błędne CMR
                         CMI = N_corr/ N_maches
                         mask = mask.ravel().astype(bool)
                         src_pts = pts1[mask]
                         dst_pts = pts2[mask]
 
                         #print(M)
+                        # Błąd RMSE na Punktach dopasowania w nowej transformacji z nowego dopasowania
                         rmse_1,blad = RMSE.calculate_RMSE(M,src_pts,dst_pts)
+
+                        # Błąd RMSE na Punktach kontrolnych
                         rmse_2,blad = RMSE.calculate_RMSE(M,n_ptk_CAPELLA,n_ptk_PNEO)
 
-                        CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ref_CAPELLA,n_ref_PNEO,src_pts,dst_pts,1)
+                        #CMR_corr,rmse_3,blad_3 =  RMSE.calculate_CMR(n_ref_CAPELLA,n_ref_PNEO,src_pts,dst_pts,1)
                         #print("RMSE:\t", RMSE*0.35)
                         #PRZED
                         h,w = img1.shape
@@ -183,8 +189,9 @@ else:
                         raport.write(f"<img src='SAR_{d}_SUB_{scale}m_{norm}-EO_{d}_SUB_{scale}m_gray_bad.png'/>")
                         #plt.show()
 
-
-                        CMR_corr,rmse_3,blad_3,corr_mask =  RMSE.calculate_CMR_mask(n_ptk_CAPELLA,n_ptk_PNEO,src_pts,dst_pts)
+                        # Obliczenie referencyjnej macierzy
+                        Macierz, mask = cv2.estimateAffine2D(n_ref_CAPELLA,n_ref_PNEO)
+                        CMR_corr,treshold,blad_3,corr_mask =  RMSE.calculate_CMR_mask_new(Macierz,n_ptk_CAPELLA,n_ptk_PNEO,src_pts,dst_pts)
                         #corr_mask = corr_mask.ravel().astype(bool)
                         #print("RMSE:\t", RMSE*0.35)
                         #PRZED
@@ -220,8 +227,8 @@ else:
                         raport.write(f"<p>Norm/SAR_{d}_SUB_{scale}m_{norm} -> Norm/EO_{d}_SUB_{scale}m_gray</p>")
                         print(f"N corr:\t{N_corr}\nN maches:\t{N_maches}\nCMR: {CMI*100}\nCMR corr:\t{CMR_corr}\nRMSE: \t{rmse_1*0.35}\nRMSE Kontrol:\t{rmse_2*0.35}\nTotal Time: \t{total_time}")
                         raport.write(f"N corr:   {N_corr}<br>N maches:   {N_maches}<br>CMR:  {CMI*100}<br>CMR corr:  {CMR_corr}<br>RMSE:  {rmse_1*0.35}<br>RMSE Kontrol:  {rmse_2*0.35}<br>Total Time:  {total_time}")
-                        print(f"CMR corr:\t{CMR_corr}\nRMSE: \t{rmse_3*0.35}")
-                        raport.write(f"CMR corr:  {CMR_corr}<br>RMSE:  {rmse_3*0.35}")
+                        print(f"CMR corr:\t{CMR_corr}\nRMSE: \t{treshold*0.35}")
+                        raport.write(f"CMR corr:  {CMR_corr}<br>RMSE:  {treshold*0.35}")
                         print("error")
                         raport.write(f"error<br>")
                         print(blad_3)

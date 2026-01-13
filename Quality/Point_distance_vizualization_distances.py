@@ -5,14 +5,18 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mc
 import RMSE
 
-# DANE
-ptk_PNEO = np.genfromtxt(r"RefPoints/UTM_URWH_PNEO.csv", delimiter=',',dtype=np.float32)
-print(ptk_PNEO)
-ptk_CAPELLA = np.genfromtxt(r"RefPoints/UTM_URWH_CAPELLA.csv", delimiter=',',dtype=np.float32)
-print(ptk_CAPELLA)
+# DANE kontrolne
+ptk_PNEO_k = np.genfromtxt(r"RefPoints/UTM_URWH_PNEO.csv", delimiter=',',dtype=np.float32)
+print(ptk_PNEO_k)
+ptk_CAPELLA_k = np.genfromtxt(r"RefPoints/UTM_URWH_CAPELLA.csv", delimiter=',',dtype=np.float32)
+print(ptk_CAPELLA_k)
+# Dane do wizualizacji
 img1 = cv2.imread(r"Norm/SAR_URWH_SUB_035m_gray.png",0)
 img2 = cv2.imread(r"Norm/EO_URWH_SUB_035m_gray.png",0)
-diff = ptk_PNEO-ptk_CAPELLA
+
+# Dane do wyznaczenia referencyjej transformacji
+
+diff_ = ptk_PNEO_k-ptk_CAPELLA_k
 # RMSE i Transformacja
 print(diff)
 dist = np.linalg.norm(diff, axis=1)
