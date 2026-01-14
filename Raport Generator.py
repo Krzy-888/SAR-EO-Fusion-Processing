@@ -8,7 +8,7 @@ import os
 datas = ["URRC", "UIAA", "URWH", "UDYE"]
 scales = ["10m","1m","035m","GM_035m"]
 norms = ["bad","gray","log"]
-methods = ["ORB"]
+methods = ["SIFT"]
 grd = [10,1,0.35,0.35]
 
 ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
@@ -29,8 +29,8 @@ for m in methods:
                         raport.write(f"<h3>SAR_{d}_SUB_{s}_{n}_mach</h3>")
                         try:
                             ptk_CAP = np.genfromtxt(f"report_{m}/SAR_{d}_SUB_{s}_{n}_before_mach.csv", delimiter=',',dtype=np.float32)
-                            ptk_PNEO = np.genfromtxt(f"report_{m}/EO_{d}_SUB_{s}_{n}_before_mach.csv", delimiter=',',dtype=np.float32)
-                            raport.write(f"<h3>kp bf m SAR:  {len(ptk_CAP)}, kp bf m EO: {len(ptk_PNEO)}</h3>")                            
+                            # ptk_PNEO = np.genfromtxt(f"report_{m}/EO_{d}_SUB_{s}_{n}_before_mach.csv", delimiter=',',dtype=np.float32)
+                            raport.write(f"<h3>kp bf m SAR:  {len(ptk_CAP)}</h3>")                            
                             ptk_CAP = np.genfromtxt(f"report_{m}/SAR_{d}_SUB_{s}_{n}_mach.csv", delimiter=',',dtype=np.float32)
                             ptk_PNEO = np.genfromtxt(f"report_{m}/EO_{d}_SUB_{s}_{n}_mach.csv", delimiter=',',dtype=np.float32)
                         except:
@@ -57,14 +57,18 @@ for m in methods:
                         ptk_CAP_ref = ptk_CAP_ref/ilorazy[j]
                         ptk_PNEO_check = ptk_PNEO_check/ilorazy[j]
                         ptk_CAP_check = ptk_CAP_check/ilorazy[j]
-                        print(ptk_PNEO_ref)
-                        print(ptk_CAP_ref)
+                        # print(ptk_PNEO_ref)
+                        # print(ptk_CAP_ref)
                         # Recherencyjna macierz
+
                         M_ref, mask = cv2.estimateAffine2D(ptk_CAP_ref, ptk_PNEO_ref)
 
                         # Macierz powstała w skutek dopasowania automatyczną metodą
-                        M_nowa, mask = cv2.estimateAffine2D(ptk_CAP, ptk_PNEO)
-
+                        if len(ptk_CAP)>0:
+                            M_nowa, mask = cv2.estimateAffine2D(ptk_CAP, ptk_PNEO)
+                        else:
+                            raport.write(f"<h3 style='color:red;'>not enought points</h3>")
+                            continue
                         #Właściwa maska i właściwe  CMR
                         CMR,treshold,blad,mask = RMSE.calculate_CMR_mask_new(M_ref,ptk_CAP_check,ptk_PNEO_check,ptk_CAP,ptk_PNEO)
                         #print(ptk_CAP-ptk_PNEO)
