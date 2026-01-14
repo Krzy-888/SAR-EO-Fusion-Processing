@@ -7,7 +7,7 @@ import RMSE
 
 
 # Dane
-title ="URWH"
+title ="UIAA"
 # DANE kontrolne
 ptk_PNEO_k = np.genfromtxt(f"RefPoints/UTM_{title}_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO_k)
@@ -32,8 +32,11 @@ print(diff_ref)
 # dist = np.linalg.norm(diff, axis=1)
 # print(dist)
 # print(np.mean(dist))
+#Referencyjna Macierz transformacji
 M,mask =cv2.estimateAffine2D(ptk_CAPELLA_ref,ptk_PNEO_ref)
+#Błąd RMSE na punktach kontrolnych po transformacji affinicznej
 rmse,blad = RMSE.calculate_RMSE(M,ptk_CAPELLA_k,ptk_PNEO_k)
+#Błąd RMSE na punktach referencyjnych do transformacji affinicznej
 rmse_ref,blad_ref = RMSE.calculate_RMSE(M,ptk_CAPELLA_ref,ptk_PNEO_ref)
 print(blad*0.35)
 print(rmse*0.35)
