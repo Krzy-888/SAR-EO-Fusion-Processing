@@ -13,10 +13,10 @@ cv2.setRNGSeed(0)
 data = ["URRC","UIAA","URWH","UDYE"]
 scales = ["10","1","035","GM_035"]
 norms = ["gray","log","bad"]
-# if os.path.exists(f"report_SIFT/report_SIFT.html"):
+# if os.path.exists(f"report_ORB/report_ORB.html"):
 #     print("Istnieje !!!")
 # else:
-#     with open(f"report_SIFT/report_SIFT.html", "w") as raport:
+#     with open(f"report_ORB/report_ORB.html", "w") as raport:
 for d in data:
     print(f"Start {d}")
     for s,scale in enumerate(scales):
@@ -36,15 +36,15 @@ for d in data:
                     img2 = cv2.imread(f"Norm/EO_{d}_SUB_{scale}m_gray.png",0)
                 #SIFT Inicjalizacja
                 start_time = time.time()
-                sift = cv2.SIFT_create()
+                orb = cv2.ORB_create(nfeatures = 800000)
                 end_time = time.time()
                 sift_init_time = end_time - start_time 
                 total_time+=sift_init_time
                 print("Init SIFT time:\t",sift_init_time)
                 #   START Detekcji i deskrypcji
                 start_time = time.time()
-                kp1, des1 = sift.detectAndCompute(img1, None)
-                kp2, des2 = sift.detectAndCompute(img2, None)
+                kp1, des1 = orb.detectAndCompute(img1, None)
+                kp2, des2 = orb.detectAndCompute(img2, None)
                 end_time = time.time()
                 sift_detect_time = end_time - start_time 
                 total_time+=sift_detect_time
@@ -53,13 +53,16 @@ for d in data:
                 print("KP2:", len(kp2))
                 kppt1 = np.float32([k.pt for k in kp1]).reshape(-1, 2)
                 kppt2 = np.float32([k.pt for k in kp2]).reshape(-1, 2)
-                np.savetxt(f"report_SIFT/SAR_{d}_SUB_{scale}m_{norm}_before_mach.csv", kppt1, delimiter=",")
-                np.savetxt(f"report_SIFT/EO_{d}_SUB_{scale}m_gray_before_mach.csv", kppt2, delimiter=",")
+                np.savetxt(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}_before_mach.csv", kppt1, delimiter=",")
+                np.savetxt(f"report_ORB/EO_{d}_SUB_{scale}m_gray_before_mach.csv", kppt2, delimiter=",")
                 #   MACHING
                 #   FLANN
                 start_time = time.time()
-                FLANN_INDEX_KDTREE = 1
-                index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+                FLANN_INDEX_LSH = 6
+                index_params= dict(algorithm = FLANN_INDEX_LSH,
+                table_number = 6,
+                key_size = 12,
+                multi_probe_level = 1)
                 search_params = dict(checks=50)
                 flann = cv2.FlannBasedMatcher(index_params, search_params)
                 end_time = time.time()
@@ -77,9 +80,13 @@ for d in data:
                 #   RATIO TEST LOWE
                 start_time = time.time()
                 good_matches = []
-                for m, n in matches:
-                    if m.distance < 0.7 * n.distance:
-                        good_matches.append(m)
+                for mach in matches:
+                    if len(mach) !=2:
+                        continue
+                    else:
+                        m,n = mach
+                        if m.distance < 0.7 * n.distance:
+                            good_matches.append(m)
                 end_time = time.time()
                 ratio_test_time = end_time - start_time 
                 total_time+=ratio_test_time
@@ -109,9 +116,9 @@ for d in data:
                 end_time = time.time()
                 RANSAC_model_time = end_time - start_time 
                 total_time+=RANSAC_model_time
-                np.savetxt(f"report_SIFT/SAR_{d}_SUB_{scale}m_{norm}_mach.csv", src_pts, delimiter=",")
-                np.savetxt(f"report_SIFT/EO_{d}_SUB_{scale}m_{norm}_mach.csv", dst_pts, delimiter=",")
-                with open('report_SIFT/EO_SAR_SIFT_mach.csv','a') as report_time:
+                np.savetxt(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}_mach.csv", src_pts, delimiter=",")
+                np.savetxt(f"report_ORB/EO_{d}_SUB_{scale}m_{norm}_mach.csv", dst_pts, delimiter=",")
+                with open('report_ORB/EO_SAR_ORB_mach.csv','a') as report_time:
                      report_time.write(str(total_time)+',')
                 
 
