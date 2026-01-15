@@ -8,13 +8,12 @@ import os
 datas = ["URRC", "UIAA", "URWH", "UDYE"]
 scales = ["10m","1m","035m","GM_035m"]
 norms = ["bad","gray","log"]
-methods = ["SIFT"]
+methods = ["OS_SIFT"]
 grd = [10,1,0.35,0.35]
 
 ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
 
 for m in methods:
-    else:
         with open(f"report_{m}/report_{m}.html", "w") as raport:
             numerek = 0
             for d in datas:
