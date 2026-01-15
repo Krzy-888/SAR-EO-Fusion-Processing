@@ -1,8 +1,8 @@
-
 warning('off')
 % data = ["URRC","UIAA","URWH","UDYE"];
- data = ["UIAA"];
-scales = ["10","1","035","GM_035"];
+data = ["URRC","UIAA","URWH","UDYE"];
+% scales = ["10","1","035","GM_035"];
+scales = ["10","1","035"];
 norms = ["gray","log","bad"];
 grd = [10,1,0.35];
 
@@ -92,10 +92,12 @@ for d = data
             disp('outlier removal')
             % name_process_time = d+"_SUB_"+s+"m_"+n+"_time.csv";
             total_time = RIFT_Iinit_process_point_detection_and_description + RIFT_Iinit_maching + Outlier_removal;
-            % fprintf(fid, '%s\n', d);
-            
-            fprintf(fid,'%s,',total_time);
+            time_list = [total_time, RIFT_Iinit_process_point_detection_and_description, RIFT_Iinit_maching, Outlier_removal];
+            name_mach_sar_time = "SAR_"+d+"_SUB_"+s+"m_"+n+"_mach_time.csv";
+            writematrix(time_list,'report_RIFT\'+name_mach_sar_time);
+
         end
     end
 end
 fclose(fid);
+display("DONE")

@@ -80,10 +80,12 @@ for dateseses = data
             writematrix(cor22,'report_OS_SIFT\'+name_kp_mach_sar);
             writematrix(cor11,'report_OS_SIFT\'+name_kp_mach_eo);
             total_time = initial_OS_SIFT + Iinit_maching;
-            fprintf(fid,'%s,',total_time);
+            time_list = [total_time, RIFT_Iinit_process_point_detection_and_description, RIFT_Iinit_maching, Outlier_removal];
+            name_mach_sar_time = "SAR_"+dateseses+"_SUB_"+s+"m_"+n+"_mach_time.csv";
+            writematrix(time_list,'report_OS_SIFT\'+name_mach_sar_time);
         end
     end
 end
 fclose(fid);
-display('DONE')
+disp('DONE')
 
