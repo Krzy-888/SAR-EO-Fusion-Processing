@@ -7,3 +7,8 @@ report_URRC_SIFT/
 report_SIFT/
 report_ORB/
 report_RIFT/
+OLDIES/
+report_RIFT_OLDIES/
+report_OS_SIFT/
+report_SAR_SIFT/
+Filter_test/

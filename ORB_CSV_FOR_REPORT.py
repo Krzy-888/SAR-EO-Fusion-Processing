@@ -118,8 +118,8 @@ for d in data:
                 total_time+=RANSAC_model_time
                 np.savetxt(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}_mach.csv", src_pts, delimiter=",")
                 np.savetxt(f"report_ORB/EO_{d}_SUB_{scale}m_{norm}_mach.csv", dst_pts, delimiter=",")
-                with open('report_ORB/EO_SAR_ORB_mach.csv','a') as report_time:
-                     report_time.write(str(total_time)+',')
+                total_time_LIST = [total_time, RANSAC_model_time,RANSAC_init_time, flann_maching_time, sift_init_time]
+                np.savetxt(f"report_ORB/SAR_{d}_SUB_{scale}m_{norm}_mach_time.csv", total_time_LIST, delimiter=",")
                 
 
 print("DONE")

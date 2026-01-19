@@ -99,7 +99,7 @@ for dATESES in data:
                     continue
                 RANSAC_init_time = end_time - start_time 
                 total_time+=RANSAC_init_time
-                start_time = time.time()
+                # start_time = time.time()
                 # Linczenie Macierzy Transformacji dla modelu po dopasowaniu obrazów
                 better_kp1 = np.asarray(better_kp1, dtype=np.float32)
                 better_kp2 = np.asarray(better_kp2, dtype=np.float32)
@@ -113,6 +113,6 @@ for dATESES in data:
                     continue
                 np.savetxt(f"SAR-SIFT/report_SAR_SIFT/SAR_{dATESES}_SUB_{scaleses}m_{norm}_mach.csv", better_kp1, delimiter=",")
                 np.savetxt(f"SAR-SIFT/report_SAR_SIFT/EO_{dATESES}_SUB_{scaleses}m_{norm}_mach.csv", better_kp2, delimiter=",")
-                with open('SAR-SIFT/report_SAR_SIFT/EO_SAR_ORB_mach.csv','a') as report_time:
-                     report_time.write(str(total_time)+',')
+                total_time_LIST = [total_time, RANSAC_init_time, sift_init_time]
+                np.savetxt(f"SAR-SIFT/report_SAR_SIFT/SAR_{dATESES}_SUB_{scaleses}m_{norm}_mach_time.csv", total_time_LIST, delimiter=",")
 print("DONE")
