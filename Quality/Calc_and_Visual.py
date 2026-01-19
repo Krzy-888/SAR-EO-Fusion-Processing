@@ -1,6 +1,33 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+from matplotlib.collections import LineCollection
+
+def show_maches_in_axis_2(axis, img1, img2, points1, points2, color='r'):
+    img, points_new = mach_imgpoints(img1, img2, points2)
+    axis.imshow(img, cmap="gray")
+
+    # Linie: (N, 2, 2)
+    lines = np.stack(
+        [
+            np.stack([points1[:, 0], points1[:, 1]], axis=1),
+            np.stack([points_new[:, 0], points_new[:, 1]], axis=1)
+        ],
+        axis=1
+    )
+
+    lc = LineCollection(lines, colors=color, linewidths=1)
+    axis.add_collection(lc)
+
+    # Punkty – tylko DWA scattery
+    axis.scatter(points1[:, 0], points1[:, 1], c=color, s=5)
+    axis.scatter(points_new[:, 0], points_new[:, 1], c=color, s=5)
+
+
+
+
+
+
 
 
 def mach_imgpoints(img1,img2,points2):

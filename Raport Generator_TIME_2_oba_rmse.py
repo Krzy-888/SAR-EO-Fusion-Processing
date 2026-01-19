@@ -14,7 +14,7 @@ grd = [10,1,0.35,0.35]
 ilorazy = [grd[0]/0.35,grd[1]/0.35,grd[2]/0.35,grd[3]/0.35]
 
 for m in methods:
-        with open(f"report_{m}/report_{m}.html", "w") as raport:
+        with open(f"report_{m}/report_{m}_2rmse.html", "w") as raport:
             numerek = 0
             for d in datas:
                 raport.write(f"<h1>Start {d}</h1>")
@@ -68,11 +68,12 @@ for m in methods:
                         CMR,treshold,blad,mask = RMSE.calculate_CMR_mask_new(M_ref,ptk_CAP_check,ptk_PNEO_check,ptk_CAP,ptk_PNEO)
                         #print(ptk_CAP-ptk_PNEO)
                         rmse,bled = RMSE.calculate_RMSE(M_nowa,ptk_CAP_check,ptk_PNEO_check)
+                        rmse_na_pw,bled = RMSE.calculate_RMSE(M_nowa,ptk_CAP,ptk_PNEO)
                         print(rmse*grd[j])
                         print(CMR)
                         print(treshold*grd[j])
                         T = np.genfromtxt(f"report_{m}/SAR_{d}_SUB_{s}_{n}_mach_time.csv", delimiter=',',dtype=np.float32)
-                        raport.write(f"<h3>RMSE[m]:  {rmse*grd[j]}, CMR[%]:  {CMR*100}, treshold:  {treshold*grd[j]}, T: {T[0]}</h3>")
+                        raport.write(f"<h3>RMSE [m]:  {rmse_na_pw*grd[j]}, RMSE k [m]:  {rmse*grd[j]}, CMR[%]:  {CMR*100}, treshold:  {treshold*grd[j]}, T: {T[0]}</h3>")
                         h,w = img2.shape
                         image = cv2.warpAffine(img1,M_nowa,(h,w))
 
@@ -87,8 +88,8 @@ for m in methods:
                             axes[i].set_title(tytuły[i])
                                     
                         plt.tight_layout()
-                        plt.savefig(f"report_{m}/SAR_{d}_SUB_{s}m_{n}-EO_{d}_SUB_{s}m_gray_bad.png", dpi=300,)
+                        plt.savefig(f"report_{m}/SAR_{d}_SUB_{s}m_{n}-EO_{d}_SUB_{s}m_gray_bad_2.png", dpi=300,)
                         numerek+=1
-                        raport.write(f"<img src='SAR_{d}_SUB_{s}m_{n}-EO_{d}_SUB_{s}m_gray_bad.png'/>")
+                        raport.write(f"<img src='SAR_{d}_SUB_{s}m_{n}-EO_{d}_SUB_{s}m_gray_bad_2.png'/>")
                 print(f"End {d}")
                 raport.write(f"<h1>End {d}</h1>")

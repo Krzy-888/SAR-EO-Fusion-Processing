@@ -1,0 +1,27 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+sift = cv2.SIFT_create()
+#draw Keypoints
+
+# paths = [r"Norm/SAR_URRC_SUB_035m_gray.png",r"Norm/SAR_URRC_SUB_035m_log.png",r"Norm/SAR_URRC_SUB_035m_bad.png"]
+# name = ["2-98%","min-max skala dB","min-max"]
+paths = [r"Norm/SAR_URWH_SUB_035m_gray.png",r"Norm/SAR_URRC_SUB_URWH_log.png",r"Norm/SAR_URRC_SUB_035m_bad.png"]
+fig, axes = plt.subplots(2, 3)
+fig.suptitle("SIFT")
+for i,path in enumerate(paths):
+    title = name[i] + f" Z"
+    img = cv2.imread(path,0)
+    img = img[1000:2000,1000:2000]
+    img_color = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+    kp, des = sift.detectAndCompute(img, None)
+    print(len(kp))
+    points = np.array([p.pt for p in kp])
+    axes[i].scatter(points[:,0],points[:,1],s=10)
+    print()
+    #title = name[i] + f" Znaleziono: {len(kp)}"
+    axes[i].imshow(img,cmap="gray")
+    axes[i].set_title(name[i])
+
+plt.tight_layout()
+plt.show()

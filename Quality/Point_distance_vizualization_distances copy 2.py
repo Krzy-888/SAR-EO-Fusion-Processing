@@ -7,7 +7,7 @@ import RMSE
 
 
 # Dane
-title ="UIAA"
+title ="UDYE"
 # DANE kontrolne
 ptk_PNEO_k = np.genfromtxt(f"RefPoints/UTM_{title}_PNEO.csv", delimiter=',',dtype=np.float32)
 print(ptk_PNEO_k)
